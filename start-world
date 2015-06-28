@@ -1,0 +1,19 @@
+#!/bin/bash
+CRASHLOG="crashlog-world"
+append_log() {
+ echo $1 | tee -a $CRASHLOG
+}
+
+while true; do
+ ~/live/bin/worldserver
+ TRIN_EXIT_CODE=$?
+ append_log ""
+ append_log ""
+ append_log "#####################################################################"
+ append_log "#World server died with exit code $TRIN_EXIT_CODE. Restarting..."
+ append_log "#Date: `date`"
+ append_log "#Last 100 lines of log follow"
+ append_log "#####################################################################"
+ tail -n 100 ~/live/bin/logs/$(ls -tr ~/live/bin/logs | grep ~/live/bin | tail -n 1) >> $CRASHLOG
+ sleep 1;
+done;

@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+use strict;
+
+
+my $warn = 1;
+my $debug = 1;
+my $dir = "/home/dev/debug/";
+
+my $num_args = $#ARGV + 1;
+if($num_args == 1 && $ARGV[0] eq "live")
+{
+    print "Building live\n";
+    $dir = "/home/dev/live/";
+    $warn = 0;
+    $debug = 0;
+}
+
+chdir "build";
+system("cmake ../ -DPREFIX=$dir -DWITH_WARNINGS=$warn -DWITH_COREDEBUG=$debug -DCMAKE_CXX_FLAGS=\"-std=c++11\"");
+
+system("make -j4");
+system("make install");
