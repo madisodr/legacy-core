@@ -162,7 +162,7 @@ class item_script_upt : public ItemScript
             player->PlayerTalkClass->ClearMenus();
             uint32 itemId;
             if(code > 0)
-                item = atoi((char*)code);
+                itemId = atoi((char*)code);
 
             ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
             if (!itemTemplate)
