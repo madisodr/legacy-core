@@ -167,15 +167,14 @@ class item_script_upt : public ItemScript
             ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
             if (!itemTemplate)
             {
-                handler->PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);
+                ChatHandler(player->GetSession()).PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if(itemTemplate->Quality > ITEM_QUALITY_UNCOMMON)
             {
-                handler->PSendSysMessage("You can't request items of this caliber.");
-                handler->SetSentErrorMessage(true);
+                ChatHandler(player->GetSession()).PSendSysMessage("You can't request this quality item.");
                 return false;
             }
 
@@ -193,8 +192,7 @@ class item_script_upt : public ItemScript
                     case IR_Uncommon:
                         if(GetItemRequests(player) <= 0)
                         {
-                            handler->PSendSysMessage("You do not have any more item requests.");
-                            handler->SetSentErrorMessage(true);
+                            ChatHandler(player->GetSession()).PSendSysMessage("You can't request anymore items");
                             return false;
                         }
 
@@ -206,7 +204,7 @@ class item_script_upt : public ItemScript
                             CharacterDatabase.DirectExecute("UPDATE character_request SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
                             player->DestroyItemCount(SilverCoin, 30, true);
 
-                            handler->PSendSysMessage("You have '%u' requests left on this character", GetItemRequests(player));
+                            ChatHandler(player->GetSession()).PSendSysMessage("You have '%u' requests left on this character", GetItemRequests(player));
 
                             return true;
                         }
