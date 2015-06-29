@@ -189,6 +189,7 @@ class item_script_upt : public ItemScript
                             CreateItem(player, item);
                             return true;
                         }
+                        break;
                     case IR_Uncommon:
                         if(GetItemRequests(player) <= 0)
                         {
@@ -209,6 +210,8 @@ class item_script_upt : public ItemScript
 
                             return true;
                         }
+
+                        break;
                 }
             }
         }
@@ -1177,9 +1180,10 @@ class item_script_upt : public ItemScript
                     player->PlayerTalkClass->SendCloseGossip();
                     break;
             }
+
+            return true;
         }
 
-        return true;
 
         bool CheckHasEnough(Player* player, uint32 cost)
         {
