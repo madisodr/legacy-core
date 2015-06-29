@@ -160,14 +160,14 @@ class item_script_upt : public ItemScript
         bool OnGossipSelectCode(Player* player, Item* item, uint32 sender, uint32 action, const char* code)
         {
             player->PlayerTalkClass->ClearMenus();
-            uint32 item;
+            uint32 itemId;
             if(code > 0)
                 item = atoi((char*)code);
 
-            ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(item);
+            ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
             if (!itemTemplate)
             {
-                handler->PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, item);
+                handler->PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);
                 handler->SetSentErrorMessage(true);
                 return false;
             }
@@ -186,7 +186,7 @@ class item_script_upt : public ItemScript
                     case IR_Common:
                         if(itemTemplate->Quality <= ITEM_QUALITY_NORMAL)
                         {
-                            CreateItem(player, item);
+                            CreateItem(player, itemId);
                             return true;
                         }
                         break;
@@ -200,7 +200,7 @@ class item_script_upt : public ItemScript
 
                         if(itemTemplate->Quality == ITEM_QUALITY_UNCOMMON && CheckHasEnough(player, 30))
                         {
-                            if(CreateItem(player, item) == false)
+                            if(CreateItem(player, itemId) == false)
                                 return false;
 
                             CharacterDatabase.DirectExecute("UPDATE character_request SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
