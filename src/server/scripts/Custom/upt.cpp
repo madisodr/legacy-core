@@ -23,6 +23,9 @@ class item_script_upt : public ItemScript
             ElementalNShaman,
             ItemRequest,
 
+            IR_Common,
+            IR_Uncommon,
+
             /*** Individual spells ****/
             /* Animations & Actions */
             AA_Weapon_Swing = 35041,
