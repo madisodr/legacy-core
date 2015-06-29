@@ -167,8 +167,7 @@ class item_script_upt : public ItemScript
             ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
             if (!itemTemplate)
             {
-                ChatHandler(player->GetSession()).PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);
-                handler->SetSentErrorMessage(true);
+                ChatHandler(player->GetSession()).PSendSysMessage("Invalid item entry");
                 return false;
             }
 
