@@ -203,7 +203,7 @@ class item_script_upt : public ItemScript
                             if(CreateItem(player, itemId) == false)
                                 return false;
 
-                            CharacterDatabase.DirectExecute("UPDATE character_request SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
+                            CharacterDatabase.PExecute("UPDATE character_request SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
                             player->DestroyItemCount(SilverCoin, 30, true);
 
                             ChatHandler(player->GetSession()).PSendSysMessage("You have '%u' requests left on this character", GetItemRequests(player));
