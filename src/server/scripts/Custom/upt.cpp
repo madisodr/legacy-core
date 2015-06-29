@@ -176,7 +176,7 @@ class item_script_upt : public ItemScript
             {
                 handler->PSendSysMessage("You can't request items of this caliber.");
                 handler->SetSentErrorMessage(true);
-                return false;v
+                return false;
             }
 
             if(sender == GOSSIP_SENDER_MAIN)
