@@ -1180,97 +1180,96 @@ class item_script_upt : public ItemScript
         }
 
         return true;
-}
 
-bool CheckHasEnough(Player* player, uint32 cost)
-{
-    if (player->HasItemCount(SilverCoin, cost))
-        return true;
-    else
-    {
-        ChatHandler(player->GetSession()).SendSysMessage("You do not have enough coins.");
-        return false;
-    }
-}
-
-void TryLearnSpell(Player* player, uint32 cost, uint32 spell, uint32 skill = 0, uint8 type = 1)
-{
-    ChatHandler handler = ChatHandler(player->GetSession());
-    if (player->HasSpell(spell))
-    {
-        if (skill)
+        bool CheckHasEnough(Player* player, uint32 cost)
         {
-            if (player->HasSkill(skill))
+            if (player->HasItemCount(SilverCoin, cost))
+                return true;
+            else
             {
-                handler.SendSysMessage("You already own the spell and skill.");
+                ChatHandler(player->GetSession()).SendSysMessage("You do not have enough coins.");
+                return false;
+            }
+        }
+
+        void TryLearnSpell(Player* player, uint32 cost, uint32 spell, uint32 skill = 0, uint8 type = 1)
+        {
+            ChatHandler handler = ChatHandler(player->GetSession());
+            if (player->HasSpell(spell))
+            {
+                if (skill)
+                {
+                    if (player->HasSkill(skill))
+                    {
+                        handler.SendSysMessage("You already own the spell and skill.");
+                    }
+                    else
+                    {
+                        switch (type)
+                        {
+                            case 1: // weapon skills
+                                {
+                                    player->SetSkill(skill, 1, 400, 400);
+                                    CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 400, 400);
+                                    break;
+                                }
+                            case 2: // proficiencies
+                                {
+                                    player->SetSkill(skill, 1, 1, 1);
+                                    CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 1, 1);
+                                }
+                            case 3: //language
+                                {
+                                    player->SetSkill(skill, 1, 300, 300);
+                                    CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 300, 300);
+                                }
+                        }
+                        player->DestroyItemCount(SilverCoin, cost, true);
+                        CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('skill', %u, %u)", skill, player->GetGUIDLow());
+                    }
+                }
+                else
+                {
+                    handler.SendSysMessage("You already own the spell.");
+                }
+            }
+            else if (skill)
+            {
+                if (!player->HasSkill(skill))
+                {
+                    switch (type)
+                    {
+                        case 1: // weapon skills
+                            {
+                                player->SetSkill(skill, 1, 400, 400);
+                                CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 400, 400);
+                                break;
+                            }
+                        case 2: // proficiencies
+                            {
+                                player->SetSkill(skill, 1, 1, 1);
+                                CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 1, 1);
+                            }
+                        case 3: //language
+                            {
+                                player->SetSkill(skill, 1, 300, 300);
+                                CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 300, 300);
+                            }
+                    }
+                    CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('skill', %u, %u)", skill, player->GetGUIDLow());
+                }
+
+                player->LearnSpell(spell, false);
+                player->DestroyItemCount(SilverCoin, cost, true);
+                CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('spell', %u, %u)", spell, player->GetGUIDLow());
             }
             else
             {
-                switch (type)
-                {
-                    case 1: // weapon skills
-                        {
-                            player->SetSkill(skill, 1, 400, 400);
-                            CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 400, 400);
-                            break;
-                        }
-                    case 2: // proficiencies
-                        {
-                            player->SetSkill(skill, 1, 1, 1);
-                            CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 1, 1);
-                        }
-                    case 3: //language
-                        {
-                            player->SetSkill(skill, 1, 300, 300);
-                            CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 300, 300);
-                        }
-                }
+                player->LearnSpell(spell, false);
                 player->DestroyItemCount(SilverCoin, cost, true);
-                CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('skill', %u, %u)", skill, player->GetGUIDLow());
+                CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('spell', %u, %u)", spell, player->GetGUIDLow());
             }
         }
-        else
-        {
-            handler.SendSysMessage("You already own the spell.");
-        }
-    }
-    else if (skill)
-    {
-        if (!player->HasSkill(skill))
-        {
-            switch (type)
-            {
-                case 1: // weapon skills
-                    {
-                        player->SetSkill(skill, 1, 400, 400);
-                        CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 400, 400);
-                        break;
-                    }
-                case 2: // proficiencies
-                    {
-                        player->SetSkill(skill, 1, 1, 1);
-                        CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 1, 1);
-                    }
-                case 3: //language
-                    {
-                        player->SetSkill(skill, 1, 300, 300);
-                        CharacterDatabase.PQuery("INSERT INTO character_upt_skills VALUES (%u, %u, %u, %u)", player->GetGUIDLow(), skill, 300, 300);
-                    }
-            }
-            CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('skill', %u, %u)", skill, player->GetGUIDLow());
-        }
-
-        player->LearnSpell(spell, false);
-        player->DestroyItemCount(SilverCoin, cost, true);
-        CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('spell', %u, %u)", spell, player->GetGUIDLow());
-    }
-    else
-    {
-        player->LearnSpell(spell, false);
-        player->DestroyItemCount(SilverCoin, cost, true);
-        CharacterDatabase.PQuery("INSERT INTO upt_purchases VALUES ('spell', %u, %u)", spell, player->GetGUIDLow());
-    }
-}
 };
 
 void AddSC_upt()
