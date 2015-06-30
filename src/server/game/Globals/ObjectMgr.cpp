@@ -1723,8 +1723,8 @@ void ObjectMgr::LoadCreatures()
 
     //                                               0              1   2    3        4             5           6           7           8            9              10
     QueryResult result = WorldDatabase.Query("SELECT creature.guid, id, map, modelid, equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, "
-    //   11               12         13       14            15         16         17          18          19                20                   21                      22
-        "currentwaypoint, curhealth, curmana, MovementType, spawnMask, phaseMask, eventEntry, pool_entry, creature.npcflag, creature.unit_flags, creature.dynamicflags, creature.faction, "
+    //   11               12         13       14            15            16         17         18          19          20                21                   22
+        "currentwaypoint, curhealth, curmana, DeathState,   MovementType, spawnMask, phaseMask, eventEntry, pool_entry, creature.npcflag, creature.unit_flags, creature.dynamicflags, creature.faction, "
     //    23          24          25
         "creature.itemEntry1, creature.itemEntry2, creature.itemEntry3 " 
         "FROM creature "
@@ -1775,18 +1775,19 @@ void ObjectMgr::LoadCreatures()
         data.currentwaypoint= fields[11].GetUInt32();
         data.curhealth      = fields[12].GetUInt32();
         data.curmana        = fields[13].GetUInt32();
-        data.movementType   = fields[14].GetUInt8();
-        data.spawnMask      = fields[15].GetUInt8();
-        data.phaseMask      = fields[16].GetUInt32();
-        int16 gameEvent     = fields[17].GetInt8();
-        uint32 PoolId       = fields[18].GetUInt32();
-        data.npcflag        = fields[19].GetUInt32();
-        data.unit_flags     = fields[20].GetUInt32();
-        data.dynamicflags   = fields[21].GetUInt32();
-        data.faction        = fields[22].GetUInt32();
-        data.itemEntry1     = fields[23].GetUInt32();
-        data.itemEntry2     = fields[24].GetUInt32();
-        data.itemEntry3     = fields[25].GetUInt32();
+        data.is_dead        = fields[14].GetUInt8();
+        data.movementType   = fields[15].GetUInt8();
+        data.spawnMask      = fields[16].GetUInt8();
+        data.phaseMask      = fields[17].GetUInt32();
+        int16 gameEvent     = fields[18].GetInt8();
+        uint32 PoolId       = fields[19].GetUInt32();
+        data.npcflag        = fields[20].GetUInt32();
+        data.unit_flags     = fields[21].GetUInt32();
+        data.dynamicflags   = fields[22].GetUInt32();
+        data.faction        = fields[23].GetUInt32();
+        data.itemEntry1     = fields[24].GetUInt32();
+        data.itemEntry2     = fields[25].GetUInt32();
+        data.itemEntry3     = fields[26].GetUInt32();
 
         MapEntry const* mapEntry = sMapStore.LookupEntry(data.mapid);
         if (!mapEntry)

@@ -1954,38 +1954,11 @@ public:
 
         if (strncmp(args, "on", 3) == 0)
         {
-            if (pCreature->GetUInt32Value(UNIT_FIELD_FLAGS) == 570458368)
-            {
-                handler->SendSysMessage("Creature already dead.");
-                handler->SetSentErrorMessage(true);
-                return false;
-            }
-
-            WorldDatabase.PExecute("UPDATE creature SET unit_flags = 570458368, dynamicflags = 32 WHERE guid = %u", pCreature->GetGUIDLow());
-            WorldDatabase.PExecute("INSERT INTO creature_addon (guid, bytes2, auras) VALUES (%u, 1, '31261') ON DUPLICATE KEY UPDATE bytes2 = 1, auras = '31261'", pCreature->GetGUIDLow());
-            pCreature->SetUInt32Value(UNIT_FIELD_FLAGS, 570458368);
-            pCreature->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 32);
-            pCreature->SetByteValue(UNIT_FIELD_BYTES_2, 1, uint8(1 & 0xFF));
-            pCreature->AddAura(31261, pCreature);
-            handler->SendSysMessage("Warning. The creature will remain immobilel and useless until next restart. Do not bother using .npc mod deathstate on unless you're a builder.");
+            pCreature->SetDeadByDefault(true);
         }
         else if (strncmp(args, "off", 4) == 0)
         {
-            if (pCreature->GetUInt32Value(UNIT_FIELD_FLAGS) != 570458368)
-            {
-                handler->SendSysMessage("Creature not dead.");
-                handler->SetSentErrorMessage(true);
-                return false;
-            }
-            WorldDatabase.PExecute("UPDATE creature SET unit_flags = 0, dynamicflags = 0 WHERE guid = %u", pCreature->GetGUIDLow());
-            WorldDatabase.PExecute("UPDATE creature_addon SET bytes2 = 0, auras = NULL WHERE guid = %u", pCreature->GetGUIDLow());
-            ProcessCreatureAddon(handler, pCreature->GetGUIDLow());
-            pCreature->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
-            pCreature->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
-            pCreature->SetByteValue(UNIT_FIELD_BYTES_2, 1, uint8(0 & 0xFF));
-            pCreature->SetByteValue(UNIT_FIELD_BYTES_2, 0, 0);
-            pCreature->RemoveAura(31261);
-            handler->SendSysMessage("On next restart, this creature will be alive again.");
+            pCreature->SetDeadByDefault(false);
         }
         else
         {

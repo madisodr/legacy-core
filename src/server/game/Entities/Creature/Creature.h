@@ -268,6 +268,7 @@ struct CreatureData
     uint32 currentwaypoint;
     uint32 curhealth;
     uint32 curmana;
+    bool is_dead;
     uint8 movementType;
     uint8 spawnMask;
     uint32 npcflag;
@@ -607,6 +608,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         void SetDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
 
         void RemoveCorpse(bool setSpawnTime = true);
+        bool isDeadByDefault() const { return m_isDeadByDefault; };
 
         void DespawnOrUnsummon(uint32 msTimeToDespawn = 0);
 
@@ -661,6 +663,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         void SetFormation(CreatureGroup* formation) { m_formation = formation; }
 
         Unit* SelectVictim();
+        void SetDeadByDefault(bool s){ m_isDeadByDefault = s; }
 
         void SetDisableReputationGain(bool disable) { DisableReputationGain = disable; }
         bool IsReputationGainDisabled() { return DisableReputationGain; }
@@ -717,6 +720,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         bool m_AlreadySearchedAssistance;
         bool m_regenHealth;
         bool m_AI_locked;
+        bool m_isDeadByDefault;
 
         SpellSchoolMask m_meleeDamageSchoolMask;
         uint32 m_originalEntry;

@@ -68,7 +68,7 @@ class item_script_upt : public ItemScript
             DS_Heart_Beam = 54988,
             DS_Fel_Crystal = 44374,
             DS_Sphere_Purple = 56075,
-            DS_Food_Poisoning = 28528,
+          DS_Food_Poisoning = 28528,
             DS_Animal_Feed = 29918,
             DS_Raise_Dead = 69431,
             DS_Soul_Separation = 46695,
