@@ -1421,6 +1421,7 @@ void AddBattlegroundScripts()
     void AddSC_galenus();
     void AddSC_apt_system();
     void AddSC_upt();
+    void AddSC_grimoire();
 #endif
 
 void AddCustomScripts()
@@ -1433,5 +1434,6 @@ void AddCustomScripts()
     AddSC_galenus();
     AddSC_apt_system();
     AddSC_upt();
+    AddSC_grimoire();
 #endif
 }

@@ -140,7 +140,6 @@ enum CharacterCustomizeFlags
     CHAR_CUSTOMIZE_FLAG_RACE            = 0x00100000        // name, gender, race, etc...
 };
 
-/**** Legacy Block ****/
 
 enum Skills
 {
@@ -183,7 +182,6 @@ enum Spells
     Taunt = 355
 };
 
-/** Legacy Block End **/
 
 // corpse reclaim times
 #define DEATH_EXPIRE_STEP (5*MINUTE)
@@ -1047,11 +1045,6 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
 
     setFactionForRace(createInfo->Race);
 
-    /* Legacy Block: Edited by Themistlces - Pendragon */
-    if (createInfo->Race == 18)
-    {
-          
-    }
     switch (createInfo->Race)
     {
     case 18:
@@ -1638,49 +1631,56 @@ void Player::Update(uint32 p_time)
     /**** Legacy Block ****/
     if (GetTotalPlayedTime() > GetNextCoinTime())
     {
-        SetNextCoinTime(GetTotalPlayedTime() + 3600);
-
-        // Adding items
-        uint32 noSpaceForCount = 0;
-        bool nospace = false;
-
-        // check space and find places
-        ItemPosCountVec dest;
-        InventoryResult msg = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 999116, 10, &noSpaceForCount);
-        if (msg != EQUIP_ERR_OK)                               // convert to possible store amount
-            nospace = true;
-
-        if (nospace || dest.empty() || noSpaceForCount > 0)                         // can't add any
+        if(GetMapId() == 725)
         {
-            ChatHandler(GetSession()).SendSysMessage("You do not have enough room for your free Silver Coin. It has been mailed to you instead.");
-            // from console show not existed sender
-            MailSender sender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM);
+            ChatHandler(GetSession()).SendSysMessage("Spark of Creation is a coin free zone.");
+            SetNextCoinTime(GetTotalPlayedTime() + 3600);
+        } else 
+        {
+            SetNextCoinTime(GetTotalPlayedTime() + 3600);
 
-            // fill mail
-            MailDraft draft("Silver Coin", "For your activity on Legacy, you are receiving ten Silver Coins.");
+            // Adding items
+            uint32 noSpaceForCount = 0;
+            bool nospace = false;
 
-            SQLTransaction trans = CharacterDatabase.BeginTransaction();
+            // check space and find places
+            ItemPosCountVec dest;
+            InventoryResult msg = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 999116, 10, &noSpaceForCount);
+            if (msg != EQUIP_ERR_OK)                               // convert to possible store amount
+                nospace = true;
 
-            if (Item* item = Item::CreateItem(999116, 10, this))
+            if (nospace || dest.empty() || noSpaceForCount > 0)                         // can't add any
             {
-                item->SaveToDB(trans);                               // save for prevent lost at next mail load, if send fail then item will deleted
-                draft.AddItem(item);
+                ChatHandler(GetSession()).SendSysMessage("You do not have enough room for your free Silver Coin. It has been mailed to you instead.");
+                // from console show not existed sender
+                MailSender sender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM);
+
+                // fill mail
+                MailDraft draft("Silver Coin", "For your activity on Legacy, you are receiving ten Silver Coins.");
+
+                SQLTransaction trans = CharacterDatabase.BeginTransaction();
+
+                if (Item* item = Item::CreateItem(999116, 10, this))
+                {
+                    item->SaveToDB(trans);                               // save for prevent lost at next mail load, if send fail then item will deleted
+                    draft.AddItem(item);
+                }
+                draft.SendMailTo(trans, MailReceiver(this, GetGUID().GetCounter()), sender);
+                CharacterDatabase.CommitTransaction(trans);
             }
-            draft.SendMailTo(trans, MailReceiver(this, GetGUID().GetCounter()), sender);
-            CharacterDatabase.CommitTransaction(trans);
-        }
-        else
-        {
-            SQLTransaction trans = CharacterDatabase.BeginTransaction();
-            ChatHandler(GetSession()).SendSysMessage("For your activity on Legacy, you are receiving a Silver Coin.");
-          //  for (int i = 0; i < 10; i++)
+            else
+            {
+                SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                ChatHandler(GetSession()).SendSysMessage("For your activity on Legacy, you are receiving a Silver Coin.");
+                //  for (int i = 0; i < 10; i++)
                 Item* item = StoreNewItem(dest, 999116, true, Item::GenerateItemRandomPropertyId(999116));
 
-            if (item)
-            {
-                SendNewItem(item, 10, true, false);
+                if (item)
+                {
+                    SendNewItem(item, 10, true, false);
+                }
+                CharacterDatabase.CommitTransaction(trans);
             }
-            CharacterDatabase.CommitTransaction(trans);
         }
     }
     /** Legacy Block End **/

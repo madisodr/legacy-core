@@ -9,23 +9,17 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 set(scripts_STAT_SRCS
-  ${scripts_STAT_SRCS}
-  Custom/apt_system.cpp
-  Custom/cs_legacy.cpp
- # Custom/cs_storyscript.cpp #Dynamic scripting system.
-  Custom/euclid.cpp #spawn sytem
-  Custom/carpus.cpp #teleporter
-  Custom/galenus.cpp #death 2.0
- # Custom/2_deaths.cpp #death 1.0
- # Custom/mod_helf_rep.cpp 
- # Custom/kali_tele.cpp
-  Custom/misc.cpp
- # Custom/hector.cpp #mount system
- # Custom/scale_npc.cpp 
- # Custom/crates.cpp #rts system
- # Custom/Transportation.cpp #Transportation system.
- # Custom/talent_spells.cpp
-   Custom/upt.cpp
+${scripts_STAT_SRCS}
+Custom/apt_system.cpp
+Custom/cs_legacy.cpp
+Custom/euclid.cpp #spawn sytem
+Custom/carpus.cpp #teleporter
+Custom/galenus.cpp #death 2.0
+Custom/grimoire.cpp
+Custom/misc.cpp
+Custom/upt.cpp
+Custom/legacy_defines.h
+
 )
 
 message("  -> Prepared: Custom")

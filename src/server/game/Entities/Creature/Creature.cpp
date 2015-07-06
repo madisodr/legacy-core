@@ -232,7 +232,7 @@ void Creature::SearchFormation()
 
 void Creature::RemoveCorpse(bool setSpawnTime)
 {
-    if ((getDeathState() != CORPSE && !m_isDeadByDefault) || (getDeathState() != ALIVE && m_isDeadByDefault)
+    if ((getDeathState() != CORPSE && !m_isDeadByDefault) || (getDeathState() != ALIVE && m_isDeadByDefault))
         return;
 
     m_corpseRemoveTime = time(NULL);
@@ -1271,9 +1271,6 @@ bool Creature::LoadCreatureFromDB(uint32 guid, Map* map, bool addToMap)
 
     m_isDeadByDefault = data->is_dead;
 
-    if(data->is_dead == 1)
-        TC_LoG_ERROR(LOG_FILTER_UNITS, "Creature (GUID: %u Entry %u) is dead", GetGUIDLow(), GetEntry());
-
     m_deathState = m_isDeadByDefault ? DEAD : ALIVE;
 
     m_respawnTime  = GetMap()->GetCreatureRespawnTime(m_DBTableGuid);
@@ -1588,12 +1585,12 @@ void Creature::Respawn(bool force)
             UpdateEntry(m_originalEntry);
 
         SelectLevel();
-        if(m_isTempWorldObject)
+        if(m_isDeadByDefault)
         {
             setDeathState(JUST_DIED);
-            i_motionMaster.Clear();
-            ClearUnitState(uint32(UINT_STATE_ALL_STATE));
-            LoadCreatureAddon(true);
+            i_motionMaster->Clear();
+            ClearUnitState(uint32(UNIT_STATE_ALL_STATE));
+            LoadCreaturesAddon(true);
         } else
             setDeathState(ALIVE);
 

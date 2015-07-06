@@ -7,7 +7,7 @@ my $debug = 1;
 my $dir = "/home/dev/debug/";
 
 my $num_args = $#ARGV + 1;
-if($num_args == 1 && $ARGV[0] eq "live")
+if($num_args == 1 && $ARGV[0] eq "-live")
 {
     print "Building live\n";
     $dir = "/home/dev/live/";
@@ -18,5 +18,5 @@ if($num_args == 1 && $ARGV[0] eq "live")
 chdir "build";
 system("cmake ../ -DPREFIX=$dir -DWITH_WARNINGS=$warn -DWITH_COREDEBUG=$debug -DCMAKE_CXX_FLAGS=\"-std=c++11\"");
 
-system("make -j4");
+system("make -j8");
 system("make install");
