@@ -262,7 +262,6 @@ class item_script_upt : public ItemScript
                     player->ADD_GOSSIP_ITEM(10, "Armor Proficiencies", GOSSIP_SENDER_MAIN, ArmorNProficiencies);
                     player->ADD_GOSSIP_ITEM(10, "Nature", GOSSIP_SENDER_MAIN, Nature);
                     player->ADD_GOSSIP_ITEM(10, "Elemental & Shaman", GOSSIP_SENDER_MAIN, ElementalNShaman);
-                    player->ADD_GOSSIP_ITEM(10, "Item Requesting", GOSSIP_SENDER_MAIN, ItemRequest);
 
                     player->PlayerTalkClass->SendGossipMenu(724008, item->GetGUID());
                     break;

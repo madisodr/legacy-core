@@ -16,8 +16,9 @@ Custom/euclid.cpp #spawn sytem
 Custom/carpus.cpp #teleporter
 Custom/galenus.cpp #death 2.0
 Custom/grimoire.cpp
-Custom/misc.cpp
-Custom/upt.cpp
+Custom/misc.cpp 
+Custom/upt.cpp 
+Custom/mounts.cpp # Mount system
 Custom/legacy_defines.h
 
 )

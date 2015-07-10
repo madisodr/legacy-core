@@ -35,40 +35,6 @@ public:
 		return commandTable;
 	}
 
-	static bool HandleGMCommand(ChatHandler* handler, char const* status)
-	{
-		std::string param = (char*)status;
-
-		if (param == "on")
-		{
-			handler->GetSession()->SendNotification("DM mode is on.");
-			handler->GetSession()->GetPlayer()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-			return true;
-		}
-
-		if (param == "off")
-		{
-			handler->GetSession()->SendNotification("DM mode is off.");
-			handler->GetSession()->GetPlayer()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-			return true;
-		}
-
-		handler->SendSysMessage(LANG_USE_BOL);
-		handler->SetSentErrorMessage(true);
-		return false;
-	}
-
-	static bool HandleGMOnCommand(ChatHandler* handler, char const*)
-	{
-		return HandleGMCommand(handler, "on");
-	}
-
-	static bool HandleGMOffCommand(ChatHandler* handler, char const*)
-	{
-		return HandleGMCommand(handler, "off");
-	}
-
-
 	static bool HandleTakeLifeCommand(ChatHandler* handler, const char* args)
 	{
 		if (!args)

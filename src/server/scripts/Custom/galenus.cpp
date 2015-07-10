@@ -22,80 +22,7 @@
 #define EXIT            "|cff00ff00|TInterface\\icons\\Trade_Engineering:60|t|r Exit"
 #define DIED_TEXT       "Don't worry. Our death zone is.. inconclusive. If you release, you will be resurrected where you are."
 #define EXECUTED_TEXT   "On release spirit, your corpse will be left at its location, and you will be teleported to the Purgatory."
-/*
-class item_tainted_core : public ItemScript
-{
-public:
-item_tainted_core() : ItemScript("item_tainted_core") { }
 
-bool OnUse(Player* player, Item* /*item*//*, SpellCastTargets const& targets) override
-{
-InstanceScript* instance = player->GetInstanceScript();
-if (!instance)
-{
-player->GetSession()->SendNotification(TEXT_NOT_INITIALIZED);
-return true;
-}
-
-Creature* vashj = ObjectAccessor::GetCreature((*player), instance->GetGuidData(DATA_LADYVASHJ));
-if (vashj && (ENSURE_AI(boss_lady_vashj::boss_lady_vashjAI, vashj->AI())->Phase == 2))
-{
-if (GameObject* gObj = targets.GetGOTarget())
-{
-uint32 identifier;
-uint8 channelIdentifier;
-switch (gObj->GetEntry())
-{
-case 185052:
-identifier = DATA_SHIELDGENERATOR1;
-channelIdentifier = 0;
-break;
-case 185053:
-identifier = DATA_SHIELDGENERATOR2;
-channelIdentifier = 1;
-break;
-case 185051:
-identifier = DATA_SHIELDGENERATOR3;
-channelIdentifier = 2;
-break;
-case 185054:
-identifier = DATA_SHIELDGENERATOR4;
-channelIdentifier = 3;
-break;
-default:
-return true;
-}
-
-if (instance->GetData(identifier))
-{
-player->GetSession()->SendNotification(TEXT_ALREADY_DEACTIVATED);
-return true;
-}
-
-// get and remove channel
-if (Unit* channel = ObjectAccessor::GetCreature(*vashj, ENSURE_AI(boss_lady_vashj::boss_lady_vashjAI, vashj->AI())->ShieldGeneratorChannel[channelIdentifier]))
-channel->setDeathState(JUST_DIED); // call Unsummon()
-
-instance->SetData(identifier, 1);
-
-// remove this item
-player->DestroyItemCount(31088, 1, true);
-return true;
-}
-else if (targets.GetUnitTarget()->GetTypeId() == TYPEID_UNIT)
-return false;
-else if (targets.GetUnitTarget()->GetTypeId() == TYPEID_PLAYER)
-{
-player->DestroyItemCount(31088, 1, true);
-player->CastSpell(targets.GetUnitTarget(), 38134, true);
-return true;
-}
-}
-return true;
-}
-
-};
-*/
 class galenus : public ItemScript
 {
 public:
@@ -103,12 +30,17 @@ public:
 
 	bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/) override
 	{
+
+        if(player->IsInCombat())
+        {
+            ChatHandler(player->GetSession()).PSendSysMessage("You can't use this item right now.");
+            return false;
+        }
 		player->PlayerTalkClass->ClearMenus();
-		//     player->ADD_GOSSIP_ITEM(10, "Welcome to the death menu. Choose your actions carefully, for they do concern life and death.", GOSSIP_SENDER_MAIN, 0);
 		player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1); //Execute
 		player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2); //Injure
 		player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3); //Release
-		//   player->ADD_GOSSIP_ITEM(10, EXIT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+		   player->ADD_GOSSIP_ITEM(10, EXIT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
 
 		player->PlayerTalkClass->SendGossipMenu(724008, item->GetGUID());
 
@@ -138,6 +70,9 @@ public:
 			HandleRelease(player);
 			player->PlayerTalkClass->SendCloseGossip();
 			break;
+        case GOSSIP_ACTION_INFO_DEF + 5: // Exit
+            player->PlayerTalkClass->SendCloseGossip();
+            break;
 		case GOSSIP_ACTION_INFO_DEF + 6: // Break arm
 			HandleBreakArm(player);
 			player->PlayerTalkClass->SendCloseGossip();
@@ -160,7 +95,7 @@ public:
 			player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1); //Execute
 			player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2); //Injure
 			player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3); //Release
-			//   player->ADD_GOSSIP_ITEM(10, EXIT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+			player->ADD_GOSSIP_ITEM(10, EXIT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
 
 			player->PlayerTalkClass->SendGossipMenu(724008, item->GetGUID());
 			break;
