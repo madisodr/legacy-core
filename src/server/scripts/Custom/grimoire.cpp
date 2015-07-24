@@ -44,15 +44,8 @@ class Grimoire : public ItemScript
                     return false;
                 }
 
-                if (!p->HasItemCount(COIN, cost))
-                {
-                    ChatHandler(p->GetSession()).SendSysMessage("You do not have enough coins.");
-                    return false;
-                }
                 p->LearnSpell(spell, false);
-                p->CastSpell(p, LEVEL_UP, false);
-                p->DestroyItemCount(item->GetEntry(), 1, true, false);
-                p->DestroyItemCount(COIN, cost, true, false);
+                p->DestroyItemCount(item->GetEntry(), 1, true, true); 
             } 
 
 
@@ -78,9 +71,12 @@ class item_requester : public CreatureScript
         bool OnGossipSelectCode(Player* player, Creature* /*creature*/, uint32 sender, uint32 action, const char* code)
         {
             player->PlayerTalkClass->ClearMenus();
-            uint32 itemId = 0;
-            uint32 cost = 0;
-            uint32 iClass, quality;
+            player->PlayerTalkClass->SendCloseGossip();
+
+            if(action == GOSSIP_ACTION_INFO_DEF+2)
+                return true;
+
+            uint32 itemId = 0, cost = 0, iClass, quality;
             ChatHandler handler = ChatHandler(player->GetSession());
 
             if(atoi((char*) code) > 0)
@@ -105,52 +101,38 @@ class item_requester : public CreatureScript
             }
 
             iClass = itemTemplate->Class;
-            if(iClass != 2 || iClass != 4 || iClass != 6 || iClass != 15)
+            if(iClass == 2 || iClass == 4 || iClass == 6 || iClass == 15)
             {
+                if(GetItemRequests(player) > 0)
+                    cost = 0;
+
+                if(quality == ITEM_QUALITY_UNCOMMON)
+                    cost = 30;
+
+                if(GetItemRequests(player) > 0)
+                    cost = 0;
+
+                if(!player->HasItemCount(COIN, cost))
+                {
+                    ChatHandler(player->GetSession()).PSendSysMessage("You don't have enough coins.");
+                    return false;
+                }
+
+                if(CreateItem(player, itemId) == false)
+                    return false;
+
+                if(quality == ITEM_QUALITY_UNCOMMON)
+                {
+                    CharacterDatabase.PExecute("UPDATE character_requests SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
+                    player->DestroyItemCount(COIN, cost, true);
+                }
+
+                ChatHandler(player->GetSession()).PSendSysMessage("You have '%u' requests left on this character", GetItemRequests(player));
+                return true;
+            } else {
                 ChatHandler(player->GetSession()).PSendSysMessage("You can't request this type of item.");
                 return false;
             }
-
-            if(GetItemRequests(player) > 0)
-                cost = 0;
-
-            if (sender == GOSSIP_SENDER_MAIN)
-            {
-                switch (action)
-                {
-                    player->PlayerTalkClass->SendCloseGossip();
-                    case GOSSIP_ACTION_INFO_DEF+1:
-                    if(quality == ITEM_QUALITY_UNCOMMON)
-                        cost = 30;
-
-                    if(GetItemRequests(player) > 0)
-                        cost = 0;
-
-                    if(!player->HasItemCount(COIN, cost))
-                    {
-                        ChatHandler(player->GetSession()).PSendSysMessage("You don't have enough coins.");
-                        return false;
-                    }
-
-                    if(CreateItem(player, itemId) == false)
-                        return false;
-
-                    if(quality == ITEM_QUALITY_UNCOMMON)
-                    {
-                        CharacterDatabase.PExecute("UPDATE character_requests SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
-
-
-                        player->DestroyItemCount(COIN, cost, true);
-                    }
-
-                    ChatHandler(player->GetSession()).PSendSysMessage("You have '%u' requests left on this character", GetItemRequests(player));
-
-
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         uint32 GetItemRequests(Player* player)
@@ -171,13 +153,12 @@ class item_requester : public CreatureScript
         bool CreateItem(Player* player, uint32 itemId)
         {
             ChatHandler handler = ChatHandler(player->GetSession());
-            MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
-
-            MailDraft draft("Item Request", "Your items, as requested.");
-            SQLTransaction trans = CharacterDatabase.BeginTransaction();
-
             if(Item* item = Item::CreateItem(itemId, 1, player))
             {
+                MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
+                MailDraft draft("Item Request", "Your items, as requested.");
+
+                SQLTransaction trans = CharacterDatabase.BeginTransaction();
                 item->SaveToDB(trans);
                 draft.AddItem(item);
 

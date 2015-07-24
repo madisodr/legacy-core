@@ -11627,6 +11627,8 @@ void Unit::Mount(uint32 mount, uint32 VehicleId, uint32 creatureEntry)
         data << uint32(sWorld->GetGameTime());   // Packet counter
         data << player->GetCollisionHeight(true);
         player->GetSession()->SendPacket(&data);
+
+        sScriptMgr->OnPlayerMount(player);
     }
 
     RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_MOUNT);
@@ -11636,6 +11638,9 @@ void Unit::Dismount()
 {
     if (!IsMounted())
         return;
+
+    if(Player* thisPlayer = ToPlayer())
+        sScriptMgr->OnPlayerDismount(thisPlayer, this->GetMountID());
 
     SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT);

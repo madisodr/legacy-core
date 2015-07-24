@@ -231,6 +231,7 @@ public:
             { "clone",     rbac::RBAC_PERM_COMMAND_NPC_INFO,      false, &HandleNpcCloneCommand,              "", NULL },
             { "info",      rbac::RBAC_PERM_COMMAND_NPC_INFO,      false, &HandleNpcInfoCommand,              "", NULL },
             { "near",      rbac::RBAC_PERM_COMMAND_NPC_NEAR,      false, &HandleNpcNearCommand,              "", NULL },
+            { "saveid",      rbac::RBAC_PERM_COMMAND_NPC_NEAR,      false, &HandleNpcSaveCommand,              "", NULL },
             { "move",      rbac::RBAC_PERM_COMMAND_NPC_MOVE,      false, &HandleNpcMoveCommand,              "", NULL },
             { "playemote", rbac::RBAC_PERM_COMMAND_NPC_PLAYEMOTE, false, &HandleNpcPlayEmoteCommand,         "", NULL },
             { "say",       rbac::RBAC_PERM_COMMAND_NPC_SAY,       false, &HandleNpcSayCommand,               "", NULL },
@@ -254,6 +255,19 @@ public:
         return commandTable;
     }
 
+    static bool HandleNpcSaveCommand(ChatHandler* handler, char const* args)
+    {
+        if(!*args)
+            return false;
+
+        char* charID = handler->extractKeyFromLink((char*)args, "Hcreature_entry");
+        if(!charID)
+            return false;
+
+        uint32 id = atoi(charID);
+        handler->GetSession()->GetPlayer()->setSavedCreatureId(id);
+        return true;
+    }
     //add spawn of creature
     static bool HandleNpcAddCommand(ChatHandler* handler, char const* args)
     {
@@ -305,7 +319,6 @@ public:
 
         uint32 db_guid = creature->GetDBTableGUIDLow();
 
-        // To call _LoadGoods(); _LoadQuests(); CreateTrainerSpells()
         // current "creature" variable is deleted and created fresh new, otherwise old values might trigger asserts or cause undefined behavior
         creature->CleanupsBeforeDelete();
         delete creature;

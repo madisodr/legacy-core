@@ -1107,9 +1107,6 @@ public:
             itemId = uint32(atol(id));
         }
 
-        // if (itemId == 999116)
-            // return false;
-
         char const* ccount = strtok(NULL, " ");
 
         int32 count = 1;
@@ -1138,9 +1135,17 @@ public:
         // Subtract
         if (count < 0)
         {
-            playerTarget->DestroyItemCount(itemId, -count, true, false);
-            handler->PSendSysMessage(LANG_REMOVEITEM, itemId, -count, handler->GetNameLink(playerTarget).c_str());
-            return true;
+            if(playerTarget->HasItemCount(itemId, -count, false))
+            {
+                playerTarget->DestroyItemCount(itemId, -count, true, false);
+                handler->PSendSysMessage(LANG_REMOVEITEM, itemId, -count, handler->GetNameLink(playerTarget).c_str());
+                return true;
+            } else
+            {
+                uint32 cc = playerTarget->GetItemCount(itemId, false);
+                handler->PSendSysMessage("Player doesn't have enough of this type of item. True count: %u", cc);
+                return false;
+            }
         }
 
         // Adding items

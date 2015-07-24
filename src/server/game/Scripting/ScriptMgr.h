@@ -759,6 +759,10 @@ class PlayerScript : public UnitScript
         // Called when a player is created.
         virtual void OnCreate(Player* /*player*/) { }
 
+        virtual void OnDismount(Player* /*player*/, uint32 /*entry*/) { }
+
+        virtual void OnMount(Player* /*player*/) { }
+
         // Called when a player is deleted.
         virtual void OnDelete(ObjectGuid /*guid*/, uint32 /*accountId*/) { }
 
@@ -1092,6 +1096,8 @@ class ScriptMgr
         void OnPlayerLogin(Player* player, bool firstLogin);
         void OnPlayerLogout(Player* player);
         void OnPlayerCreate(Player* player);
+        void OnPlayerMount(Player* player);
+        void OnPlayerDismount(Player* player, uint32 entry);
         void OnPlayerDelete(ObjectGuid guid, uint32 accountId);
         void OnPlayerFailedDelete(ObjectGuid guid, uint32 accountId);
         void OnPlayerSave(Player* player);

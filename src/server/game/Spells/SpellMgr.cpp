@@ -3738,6 +3738,10 @@ void SpellMgr::LoadSpellInfoCorrections()
                 break;
             // ENDOF ISLE OF CONQUEST SPELLS
             //
+            case 900008: // rts__placement
+            case 900007: // rts__movement
+                spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(13);
+                break;
             default:
                 break;
         }

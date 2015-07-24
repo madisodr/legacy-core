@@ -18,5 +18,5 @@ if($num_args == 1 && $ARGV[0] eq "-live")
 chdir "build";
 system("cmake ../ -DPREFIX=$dir -DWITH_WARNINGS=$warn -DWITH_COREDEBUG=$debug -DCMAKE_CXX_FLAGS=\"-std=c++11\"");
 
-system("make -j8");
+system("make -j4");
 system("make install");

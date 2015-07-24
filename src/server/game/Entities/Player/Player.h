@@ -1212,28 +1212,9 @@ public:
 	* Pendragon
 	**/
 
-	//bool mountPlaced;
-	//bool getMountPlaced() { return mountPlaced; }
-	//void setMountPlaced(bool h){ mountPlaced = h; }
-	/*
-	struct Injury
-	{
-	uint32 id;
-	uint32 timer;
-	uint32 effect;
-	};
-
-	struct InjuryPoint
-	{
-	uint32 id;
-	uint32 timer;
-	};
-
-	uint32 l_deaths;
-	std::vector<Injury*> l_injuries;
-	std::vector<InjuryPoint*> l_injuryPoints;
-	*/
-	uint32 l_executionTimer;
+	bool mountPlaced;
+	bool getMountPlaced() { return mountPlaced; }
+	void setMountPlaced(bool h){ mountPlaced = h; }
 
 	void UpdateDeathSystem(time_t now);
 
@@ -1258,27 +1239,16 @@ public:
 	void SetNextCoinTime(uint32 time);
 	uint32 GetNextCoinTime();
 
-	// Token stuff
-	//  bool m_received_token;
-	//bool HasReceivedToken() { return m_received_token; }
-	//void SetReceivedToken() { m_received_token = true; }
-	//void SendPlayerToken(uint32 token_time);
-	//  void setDeathState(DeathState s);                   // overwrite Unit::setDeathStat 
-
 	// Allow selecting game objects and remembering in later commands
-	//GameObject* m_selectedObject;
-	//void SetSelectedGameObject(GameObject* obj){ m_selectedObject = obj; }
-	//GameObject* GetSelectedGameObject(){ return m_selectedObject; }
-	//bool HasSelectedObject();
-	//void DeselectedGameObject(){ m_selectedObject = NULL; }
+	GameObject* m_selectedObject;
+    bool HasSelectedGameObject() { return m_selectedObject != NULL ? true : false; }
+	void SetSelectedGameObject(GameObject* obj){ m_selectedObject = obj; }
+	GameObject* GetSelectedGameObject(){ return m_selectedObject; }
+	void DeselectGameObject(){ m_selectedObject = NULL; } 
 
-	// Persistant player size
-	//  bool SetPlayerSize();
-
-	//  TalentHandler* l_talents;
-	//  void HandleLegacyTalents(std::string msg);
-	//  TalentHandler* getTalentHandler(){ return l_talents; }
-	//  void sendTalentHandlerMessage(std::string msg);
+    uint32 savedCreatureId;
+    uint32 getSavedCreatureId(){ return savedCreatureId; }
+    void setSavedCreatureId(uint32 id){ savedCreatureId = id; }
 
 	void MurderPlayer();
 	/*****************************************

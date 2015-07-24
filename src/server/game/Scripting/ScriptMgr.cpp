@@ -1257,6 +1257,16 @@ void ScriptMgr::OnPlayerCreate(Player* player)
     FOREACH_SCRIPT(PlayerScript)->OnCreate(player);
 }
 
+void ScriptMgr::OnPlayerMount(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnMount(player);
+}
+
+void ScriptMgr::OnPlayerDismount(Player* player, uint32 entry)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnDismount(player, entry);
+}
+
 void ScriptMgr::OnPlayerDelete(ObjectGuid guid, uint32 accountId)
 {
     FOREACH_SCRIPT(PlayerScript)->OnDelete(guid, accountId);

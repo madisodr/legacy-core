@@ -191,47 +191,15 @@ class spell_place_apt : public SpellScriptLoader
 
             sObjectMgr->AddGameobjectToGrid(guidLow, sObjectMgr->GetGOData(guidLow));
 
-            QueryResult result = WorldDatabase.PQuery("INSERT INTO apt_placed_objects VALUES('%u', '%u')", item_script_apt::itemGuid, guidLow);
+            uint32 sec = time(NULL);
+
+            QueryResult result = WorldDatabase.PQuery("INSERT INTO apt_placed_objects VALUES('%u', '%u', '%u')", item_script_apt::itemGuid, guidLow, sec);
             result = WorldDatabase.PQuery("INSERT INTO legacy_gameobject VALUES ('%u', '1', '0', '%u')", guidLow, player->GetGUIDLow());
 
             return object;
         }
 };
-/*
-class PlayerHook : public PlayerScript
-{
-public:
-    PlayerHook() : PlayerScript("playerhook") {}
 
-    void OnDelete(ObjectGuid guid, uint32 accountid) override
-    {
-        if (QueryResult result = WorldDatabase.PQuery("SELECT * FROM legacy_gameobject WHERE owner = %u", uint64(guid)))
-        {
-            do
-            {
-                Field* fields = result->Fetch();
-                GameObject* object;
-                uint32 guidLow = fields[0].GetUInt32();
-                if (GameObjectData const* gameObjectData = sObjectMgr->GetGOData(guidLow))
-                {
-                    object = ChatHandler(sWorld->FindSession(accountid)).GetObjectGlobalyWithGuidOrNearWithDbGuid(guidLow, gameObjectData->id);
-
-                    object->SetRespawnTime(0);
-                    object->Delete();
-                    object->DeleteFromDB();
-                }
-                else
-                {
-                    QueryResult result = WorldDatabase.PQuery("DELETE FROM apt_placed_objects WHERE objectGuid='%u'", object->GetGUIDLow());
-                    continue;
-                }
-
-            } while (result->NextRow());
-        }
-    }
-};
-
-*/
 void AddSC_apt_system()
 {
     new item_script_apt();

@@ -1423,6 +1423,7 @@ void AddBattlegroundScripts()
     void AddSC_upt();
     void AddSC_grimoire();
     void AddSC_hector();
+    void AddSC_rts_movement();
 #endif
 
 void AddCustomScripts()
@@ -1437,5 +1438,6 @@ void AddCustomScripts()
     AddSC_upt();
     AddSC_grimoire();
     AddSC_hector();
+    AddSC_rts_movement();
 #endif
 }

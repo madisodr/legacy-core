@@ -15,17 +15,8 @@ public:
 	cs_legacy() : CommandScript("cs_legacy") {}
 	ChatCommand* GetCommands() const
 	{
-		static ChatCommand dmCommandTable[] =
-		{
-			{ "on",    rbac::RBAC_PERM_COMMAND_DM_ON,  false, &HandleGMOnCommand,  "", NULL },
-			{ "off",   rbac::RBAC_PERM_COMMAND_DM_OFF, false, &HandleGMOffCommand, "", NULL },
-			{ NULL, 0, false, NULL, "", NULL }
-		};
-
-
 		static ChatCommand commandTable[] =
 		{
-			{ "dm",        rbac::RBAC_PERM_COMMAND_DM,         true, NULL,                    "", dmCommandTable },
 			{ "warp",      rbac::RBAC_PERM_COMMAND_WARP,      false, &HandleWarpCommand,      "", NULL },
 			{ "grantlife", rbac::RBAC_PERM_COMMAND_GRANTLIFE, false, &HandleGrantLifeCommand, "", NULL },
 			{ "takelife",  rbac::RBAC_PERM_COMMAND_TAKELIFE,  false, &HandleTakeLifeCommand,  "", NULL },

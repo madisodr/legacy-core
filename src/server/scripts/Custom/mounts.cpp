@@ -12,25 +12,22 @@ class hector_handler : public PlayerScript
 
         void OnMount(Player* player)
         {
-
-            if(player->getMountPlaced())
+            if(player->getMountPlaced() == true)
             {
-
                 player->PlayerTalkClass->SendCloseGossip();
                 if(mount != NULL)
                     mount->ToTempSummon()->UnSummon();
 
                 mount = NULL;
                 player->setMountPlaced(false);
-
             }
         }
 
         void OnDismount(Player* player, uint32 entry)
         {
-
-
             QueryResult result =  WorldDatabase.PQuery("SELECT summon_entry FROM mount_template WHERE entry='%u'", entry);
+
+            std::cout << "\n" << entry << "\n";
 
             if(!result)
                 return;
@@ -39,19 +36,16 @@ class hector_handler : public PlayerScript
 
             if(mount = player->SummonCreature(fields[0].GetUInt32(), player->GetPositionX() + 5, player->GetPositionY() + 5, player->GetPositionZ()))
             {
-
                 player->setMountPlaced(true);
-                mount->GetMotionMaster()->MoveFollow(player, PET_FOLLOW_DIST + 5, mount->GetFollowAngle());
+                mount->GetMotionMaster()->MoveFollow(player, PET_FOLLOW_DIST, mount->GetFollowAngle());
             }
 
         }
 
         void OnLogout(Player* player)
         {
-
             if(player->getMountPlaced())
             {
-
                 if(mount != NULL)
                     mount->ToTempSummon()->UnSummon();
 

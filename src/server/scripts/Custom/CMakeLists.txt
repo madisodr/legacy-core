@@ -10,6 +10,7 @@
 
 set(scripts_STAT_SRCS
 ${scripts_STAT_SRCS}
+Custom/legacy_defines.h
 Custom/apt_system.cpp
 Custom/cs_legacy.cpp
 Custom/euclid.cpp #spawn sytem
@@ -19,8 +20,7 @@ Custom/grimoire.cpp
 Custom/misc.cpp 
 Custom/upt.cpp 
 Custom/mounts.cpp # Mount system
-Custom/legacy_defines.h
-
+Custom/rts_movement.cpp
 )
 
 message("  -> Prepared: Custom")

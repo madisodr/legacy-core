@@ -32,49 +32,40 @@ class carpus_commandscript : public CommandScript
 
         static bool HandleLinkCommand(ChatHandler* handler, const char* args)
         {
-            if(!args)
-                return false;
 
             Player* player = handler->GetSession()->GetPlayer();
-
-            char* id = handler->extractKeyFromLink((char*)args, "Hgameobject");
-            if(!id)
-                return false;
-
-            uint32 guid = atoi(id);
-            if(!guid)
-                return false;
-
-            char const* ccount = strtok(NULL, " ");
-            int32 count = 0;
-            if(ccount)
-                count = strtol(ccount, NULL, 10);
-
-            if(count < 0)
-                return false;
-
-            float x, y, z, ort;
-            uint32 map;
-
-            if(GameObjectData const* goData = sObjectMgr->GetGOData(guid))
+            if(player->HasSelectedGameObject())
             {
-                if(goData->id == GO_CARPUS_TELEPORTER)
+
+                if(player->GetSelectedGameObject()->GetEntry() != GO_CARPUS_TELEPORTER)
                 {
-                    x = player->GetPositionX();
-                    y = player->GetPositionY();
-                    z = player->GetPositionZ();
-                    ort = player->GetOrientation();
-                    map = player->GetMapId();
+                    handler->SendSysMessage("The object you have selected is not a carpus object and can't be linked to the portal system.");
+                    return false;
                 }
+
+                uint32 guid = player->GetSelectedGameObject()->GetGUIDLow();
+                float x, y, z, ort;
+                uint32 map;
+
+                x = player->GetPositionX();
+                y = player->GetPositionY();
+                z = player->GetPositionZ();
+                ort = player->GetOrientation();
+                map = player->GetMapId();
+
+                QueryResult result = WorldDatabase.PQuery("SELECT objectID FROM carpus_teleports WHERE objectID='%u'", guid);
+                
+                if(result)
+                    WorldDatabase.PExecute("UPDATE carpus_teleports SET map='%u', x='%f', y='%f', z='%f', o='%f' WHERE objectID='%u'", map, x, y, z, ort, guid);
+                else
+                    WorldDatabase.PExecute("INSERT INTO carpus_teleports (objectID, map, x, y, z, o) VALUES (%u, %u, %f, %f, %f, %f)", guid, map, x, y, z, ort);
+
+                handler->SendSysMessage("A link has been added at your location to the selected object.");
+                return true;
             }
 
-            QueryResult result = WorldDatabase.PQuery("SELECT objectID FROM carpus_teleports WHERE objectID='%u' && portNum='%u'", guid, count);
-            if(result)
-                WorldDatabase.PExecute("UPDATE carpus_teleports SET map='%u', x='%f', y='%f', z='%f', o='%f' WHERE objectID='%u' && portNum='%u'", map, x, y, z, ort, guid, count);
-            else
-                WorldDatabase.PExecute("INSERT INTO carpus_teleports (objectID, map, x, y, z, o, portNum) VALUES (%u, %u, %f, %f, %f, %f, %u)", guid, map, x, y, z, ort, count);
-
-            return true;
+            handler->SendSysMessage("You didn't select an object. Run .gobject target first.");
+            return false;
         }
 };
 
@@ -86,7 +77,7 @@ class carpus_main : public GameObjectScript
         bool OnGossipHello(Player* player, GameObject* go) 
         {
             uint32 guid = (uint32)go->GetGUIDLow();
-            QueryResult result = WorldDatabase.PQuery("SELECT map, x, y, z, o FROM carpus_teleports WHERE objectID='%u' ORDER BY RAND() LIMIT 1", guid);
+            QueryResult result = WorldDatabase.PQuery("SELECT map, x, y, z, o FROM carpus_teleports WHERE objectID='%u' LIMIT 1", guid);
             if(!result)
                 return false;
 
