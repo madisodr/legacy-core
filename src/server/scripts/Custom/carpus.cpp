@@ -34,7 +34,7 @@ class carpus_commandscript : public CommandScript
         {
 
             Player* player = handler->GetSession()->GetPlayer();
-            if(player->HasSelectedGameObject())
+            if(player->GetSelectedGameObject() != NULL)
             {
 
                 if(player->GetSelectedGameObject()->GetEntry() != GO_CARPUS_TELEPORTER)

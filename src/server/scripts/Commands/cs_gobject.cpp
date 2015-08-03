@@ -264,6 +264,9 @@ class gobject_commandscript : public CommandScript
             sObjectMgr->AddGameobjectToGrid(guidLow, sObjectMgr->GetGOData(guidLow));
 
             handler->PSendSysMessage(LANG_GAMEOBJECT_ADD, objectId, objectInfo->name.c_str(), guidLow, x, y, z);
+
+            player->SetSelectedGameObject(object);
+            handler->PSendSysMessage("Spawned object selected.");
             return true;
         }
 
@@ -441,53 +444,55 @@ class gobject_commandscript : public CommandScript
 
                 handler->PSendSysMessage(LANG_COMMAND_DELOBJMESSAGE, object->GetGUIDLow());
                 return true;
-            }
-
-            // number or [name] Shift-click form |color|Hgameobject:go_guid|h[name]|h|r
-            char* id = handler->extractKeyFromLink((char*)args, "Hgameobject");
-            if (!id)
-                return false;
-
-            uint32 guidLow = atoi(id);
-            if (!guidLow)
-                return false;
-
-            GameObject* object = NULL;
-
-            // by DB guid
-            if (GameObjectData const* gameObjectData = sObjectMgr->GetGOData(guidLow))
-                object = handler->GetObjectGlobalyWithGuidOrNearWithDbGuid(guidLow, gameObjectData->id);
-
-            if (!object)
+            } else
             {
-                handler->PSendSysMessage(LANG_COMMAND_OBJNOTFOUND, guidLow);
-                handler->SetSentErrorMessage(true);
-                return false;
-            }
 
-            ObjectGuid ownerGuid = object->GetOwnerGUID();
-            if (ownerGuid)
-            {
-                Unit* owner = ObjectAccessor::GetUnit(*handler->GetSession()->GetPlayer(), ownerGuid);
-                if (!owner || !ownerGuid.IsPlayer())
+                // number or [name] Shift-click form |color|Hgameobject:go_guid|h[name]|h|r
+                char* id = handler->extractKeyFromLink((char*)args, "Hgameobject");
+                if (!id)
+                    return false;
+
+                uint32 guidLow = atoi(id);
+                if (!guidLow)
+                    return false;
+
+                GameObject* object = NULL;
+
+                // by DB guid
+                if (GameObjectData const* gameObjectData = sObjectMgr->GetGOData(guidLow))
+                    object = handler->GetObjectGlobalyWithGuidOrNearWithDbGuid(guidLow, gameObjectData->id);
+
+                if (!object)
                 {
-                    handler->PSendSysMessage(LANG_COMMAND_DELOBJREFERCREATURE, ownerGuid.GetCounter(), object->GetGUIDLow());
+                    handler->PSendSysMessage(LANG_COMMAND_OBJNOTFOUND, guidLow);
                     handler->SetSentErrorMessage(true);
                     return false;
                 }
 
-                owner->RemoveGameObject(object, false);
+                ObjectGuid ownerGuid = object->GetOwnerGUID();
+                if (ownerGuid)
+                {
+                    Unit* owner = ObjectAccessor::GetUnit(*handler->GetSession()->GetPlayer(), ownerGuid);
+                    if (!owner || !ownerGuid.IsPlayer())
+                    {
+                        handler->PSendSysMessage(LANG_COMMAND_DELOBJREFERCREATURE, ownerGuid.GetCounter(), object->GetGUIDLow());
+                        handler->SetSentErrorMessage(true);
+                        return false;
+                    }
+
+                    owner->RemoveGameObject(object, false);
+                }
+
+                WorldDatabase.PQuery("DELETE FROM apt_placed_objects WHERE objectGuid = %u", object->GetGUIDLow());
+
+                object->SetRespawnTime(0);                                 // not save respawn time
+                object->Delete();
+                object->DeleteFromDB();
+
+                handler->PSendSysMessage(LANG_COMMAND_DELOBJMESSAGE, object->GetGUIDLow());
+
+                return true;
             }
-
-            WorldDatabase.PQuery("DELETE FROM apt_placed_objects WHERE objectGuid = %u", object->GetGUIDLow());
-
-            object->SetRespawnTime(0);                                 // not save respawn time
-            object->Delete();
-            object->DeleteFromDB();
-
-            handler->PSendSysMessage(LANG_COMMAND_DELOBJMESSAGE, object->GetGUIDLow());
-
-            return true;
         }
 
         //turn selected object

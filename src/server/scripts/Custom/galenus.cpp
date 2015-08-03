@@ -36,6 +36,7 @@ public:
             ChatHandler(player->GetSession()).PSendSysMessage("You can't use this item right now.");
             return false;
         }
+
 		player->PlayerTalkClass->ClearMenus();
 		player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1); //Execute
 		player->ADD_GOSSIP_ITEM(10, GOSSIP_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2); //Injure
@@ -235,7 +236,7 @@ public:
 	{
 		Player* victim = p->GetSelectedPlayer();
 
-		if (!victim)
+    	if (!victim)
 		{
 			ChatHandler(p->GetSession()).PSendSysMessage("You don't have a player selected.");
 			return;

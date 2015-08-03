@@ -273,7 +273,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
     uint32 gmLevelInWhoList  = sWorld->getIntConfig(CONFIG_GM_LEVEL_IN_WHO_LIST);
     uint32 displaycount = 0;
 
-    WorldPacket data(SMSG_WHO, 50);                       // guess size
+    WorldPacket data(SMSG_WHO, 200);                       // guess size
     data << uint32(matchcount);                           // placeholder, count of players matching criteria
     data << uint32(displaycount);                         // placeholder, count of players displayed
 

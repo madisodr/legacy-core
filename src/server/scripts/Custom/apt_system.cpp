@@ -25,7 +25,6 @@ class item_script_apt : public ItemScript
         static uint32 entryId;
         static uint32 itemGuid;
         static const WorldLocation* summonPos;
-        uint32 lastcast;
 
         item_script_apt() : ItemScript("item_script_apt") {}
 
@@ -193,7 +192,7 @@ class spell_place_apt : public SpellScriptLoader
 
             uint32 sec = time(NULL);
 
-            QueryResult result = WorldDatabase.PQuery("INSERT INTO apt_placed_objects VALUES('%u', '%u', '%u')", item_script_apt::itemGuid, guidLow, sec);
+            QueryResult result = WorldDatabase.PQuery("INSERT INTO apt_placed_objects VALUES('%u', '%u')", item_script_apt::itemGuid, guidLow);
             result = WorldDatabase.PQuery("INSERT INTO legacy_gameobject VALUES ('%u', '1', '0', '%u')", guidLow, player->GetGUIDLow());
 
             return object;

@@ -371,30 +371,6 @@ class misc_legacy : public PlayerScript
 
 
         }
-
-        void SendUPT(Player* player)
-        {
-            if (CharacterDatabase.PQuery("SELECT * FROM has_upt WHERE guid = %u", player->GetGUIDLow()))
-                return;
-
-            MailSender sender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM);
-
-            // fill mail
-            MailDraft draft("Universal Progression Tool", "Use this tool to learn new animations.");
-
-            SQLTransaction trans = CharacterDatabase.BeginTransaction();
-
-            Item* item = Item::CreateItem(999150, 1, player);
-            item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_SOULBOUND);
-            item->SaveToDB(trans);                               // save for prevent lost at next mail load, if send fail then item will deleted
-            draft.AddItem(item);
-
-            draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
-            CharacterDatabase.CommitTransaction(trans);
-
-            CharacterDatabase.PExecute("INSERT INTO has_upt VALUES (%u)", player->GetGUIDLow());
-        }
-
         void LearnReputations(Player* player)
         {
             uint8 race = player->getRace();
@@ -451,18 +427,15 @@ class misc_legacy : public PlayerScript
         {
             SetGMSettings(player);
             LearnLanguages(player);
-            //  LearnReputations(player);
             DetermineAndOrSendBladefist(player);
             SendStarterItems(player);
-            SendUPT(player);
             if (player->getRace() == 11)
                 DraeneiHack(player);
             Abbendum(player, firstlogin);
 
-            player->ModifyMoney(999999999);
-
             if (player->GetMapId() == 725)
                 player->RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+            
             if (QueryResult Result = CharacterDatabase.PQuery("SELECT guid FROM character_deaths WHERE guid = %u", player->GetGUIDLow()))
             {
                 player->SetExecuted(true);
@@ -483,7 +456,6 @@ class misc_legacy : public PlayerScript
                 player->RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
             SetGMSettings(player);
             LearnLanguages(player);
-            LearnSkills(player);
             if (player->getRace() == 11)
                 DraeneiHack(player);
         }

@@ -3737,7 +3737,11 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(13); // 50000yd
                 break;
             // ENDOF ISLE OF CONQUEST SPELLS
-            //
+            
+            /* LEGACY SPELL EDITS */
+            case 24647: // stun spell
+                spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(4);
+                break;
             case 900008: // rts__placement
             case 900007: // rts__movement
                 spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(13);

@@ -951,8 +951,7 @@ Player::Player(WorldSession* session): Unit(true)
     _activeCheats = CHEAT_NONE;
     m_achievementMgr = new AchievementMgr(this);
     m_reputationMgr = new ReputationMgr(this);
-
-    mountPlaced = false;
+    hectorMount = NULL;
 }
 
 Player::~Player()
@@ -1690,7 +1689,7 @@ void Player::Update(uint32 p_time)
     //
     float gLevel = this->GetMap()->GetHeight(this->GetPhaseMask(), this->GetPositionX(), this->GetPositionY(), MAX_HEIGHT);
 //    float gLevel = this->GetMap()->GetWaterOrGroundLevel(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ());
-    if(this->GetPositionZ() < (gLevel - 100) && !this->IsGameMaster())
+    if(this->GetPositionZ() < (gLevel - 1000) && !this->IsGameMaster())
         this->TeleportTo(this->GetMapId(), this->GetPositionX(), this->GetPositionY(), gLevel + 5, this->GetOrientation()); 
     /** Legacy Block End **/
 
@@ -5325,6 +5324,12 @@ void Player::KillPlayer()
         ChatHandler(GetSession()).SendSysMessage("You have just died... but not to a player! This means your character is critically injured. Either wait for resurrection, or release to be taken to the Silver of Reality, where you can choose your destination.");
     if (IsFlying() && !GetTransport())
         GetMotionMaster()->MoveFall();
+
+    if(this->getMountPlaced() != NULL)
+    {
+        getMountPlaced()->ToTempSummon()->UnSummon();
+        setMountPlaced(NULL);
+    }
 
     SetMovement(MOVE_ROOT);
 

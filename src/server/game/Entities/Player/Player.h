@@ -1212,9 +1212,9 @@ public:
 	* Pendragon
 	**/
 
-	bool mountPlaced;
-	bool getMountPlaced() { return mountPlaced; }
-	void setMountPlaced(bool h){ mountPlaced = h; }
+    TempSummon* hectorMount;
+	TempSummon* getMountPlaced() { return this->hectorMount; }
+    void setMountPlaced(TempSummon* s) { this->hectorMount = s;}
 
 	void UpdateDeathSystem(time_t now);
 

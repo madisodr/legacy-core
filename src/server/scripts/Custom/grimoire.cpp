@@ -103,16 +103,13 @@ class item_requester : public CreatureScript
             iClass = itemTemplate->Class;
             if(iClass == 2 || iClass == 4 || iClass == 6 || iClass == 15)
             {
-                if(GetItemRequests(player) > 0)
-                    cost = 0;
-
                 if(quality == ITEM_QUALITY_UNCOMMON)
                     cost = 30;
 
                 if(GetItemRequests(player) > 0)
                     cost = 0;
 
-                if(!player->HasItemCount(COIN, cost))
+                if(!player->HasItemCount(COIN, cost) && cost > 0)
                 {
                     ChatHandler(player->GetSession()).PSendSysMessage("You don't have enough coins.");
                     return false;
@@ -121,7 +118,7 @@ class item_requester : public CreatureScript
                 if(CreateItem(player, itemId) == false)
                     return false;
 
-                if(quality == ITEM_QUALITY_UNCOMMON)
+                if(cost > 0)
                 {
                     CharacterDatabase.PExecute("UPDATE character_requests SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
                     player->DestroyItemCount(COIN, cost, true);
