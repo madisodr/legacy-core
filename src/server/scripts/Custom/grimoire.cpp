@@ -22,7 +22,7 @@ class Grimoire : public ItemScript
         Grimoire() : ItemScript("Grimoire"){}
         bool OnUse(Player* p, Item* item, SpellCastTargets const& /*targets*/) override
         {
-            QueryResult result = WorldDatabase.PQuery("SELECT spell_id, cost FROM grimoire WHERE item='%u'", item->GetEntry());
+            QueryResult result = WorldDatabase.PQuery("SELECT spell_id FROM grimoire WHERE item='%u'", item->GetEntry());
 
             if(result)
             {
@@ -101,7 +101,7 @@ class item_requester : public CreatureScript
             }
 
             iClass = itemTemplate->Class;
-            if(iClass == 2 || iClass == 4 || iClass == 6 || iClass == 15)
+            if(iClass == 2 || iClass == 4)
             {
                 if(quality == ITEM_QUALITY_UNCOMMON)
                     cost = 30;
@@ -109,7 +109,7 @@ class item_requester : public CreatureScript
                 if(GetItemRequests(player) > 0)
                     cost = 0;
 
-                if(!player->HasItemCount(COIN, cost) && cost > 0)
+                if(!player->HasItemCount(COIN, cost) && quality == ITEM_QUALITY_UNCOMMON)
                 {
                     ChatHandler(player->GetSession()).PSendSysMessage("You don't have enough coins.");
                     return false;
@@ -120,9 +120,11 @@ class item_requester : public CreatureScript
 
                 if(cost > 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE character_requests SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
                     player->DestroyItemCount(COIN, cost, true);
                 }
+                
+                if(quality == ITEM_QUALITY_UNCOMMON)
+                    CharacterDatabase.PExecute("UPDATE character_requests SET amount = amount - 1 WHERE guid='%u'", player->GetGUIDLow());
 
                 ChatHandler(player->GetSession()).PSendSysMessage("You have '%u' requests left on this character", GetItemRequests(player));
                 return true;
@@ -142,6 +144,7 @@ class item_requester : public CreatureScript
             } else
             {
                 CharacterDatabase.PExecute("INSERT INTO character_requests (guid, amount) VALUES ('%u', '%u')", player->GetGUIDLow(), UNCOMMON_REQUEST_COUNT);
+		        return UNCOMMON_REQUEST_COUNT;
             }
 
             return 0;

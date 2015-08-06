@@ -307,6 +307,22 @@ class misc_legacy : public PlayerScript
             } while (skills->NextRow());
         }
 
+        void LearnArmorProfs(Player* player)
+        {
+            player->SetSkill(413, 1, 1, 1);
+            player->SetSkill(414, 1, 1, 1);
+            player->SetSkill(293, 1, 1, 1);
+
+            if(!player->HasSpell(8737))
+                player->LearnSpell(8737, false);
+
+            if(!player->HasSpell(9077))
+                player->LearnSpell(9077, false);
+
+            if(!player->HasSpell(750))
+                player->LearnSpell(750, false);
+        }
+
         void Abbendum(Player* player, bool firstlogin)
         {
             if (CharacterDatabase.PQuery("SELECT * FROM abbendum where guid = %u", player->GetGUIDLow()))
@@ -435,6 +451,9 @@ class misc_legacy : public PlayerScript
 
             if (player->GetMapId() == 725)
                 player->RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+
+	        player->ModifyMoney(999999999);
+            LearnArmorProfs(player);
             
             if (QueryResult Result = CharacterDatabase.PQuery("SELECT guid FROM character_deaths WHERE guid = %u", player->GetGUIDLow()))
             {

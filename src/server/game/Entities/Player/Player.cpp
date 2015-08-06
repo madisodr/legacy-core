@@ -1688,9 +1688,8 @@ void Player::Update(uint32 p_time)
     // If a player falls through the world, teleport them to ground level.
     //
     float gLevel = this->GetMap()->GetHeight(this->GetPhaseMask(), this->GetPositionX(), this->GetPositionY(), MAX_HEIGHT);
-//    float gLevel = this->GetMap()->GetWaterOrGroundLevel(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ());
-    if(this->GetPositionZ() < (gLevel - 1000) && !this->IsGameMaster())
-        this->TeleportTo(this->GetMapId(), this->GetPositionX(), this->GetPositionY(), gLevel + 5, this->GetOrientation()); 
+    if(this->GetPositionZ() < (gLevel - 500) && !this->IsGameMaster())
+        this->TeleportTo(this->GetMapId(), this->GetPositionX(), this->GetPositionY(), gLevel + 1, this->GetOrientation()); 
     /** Legacy Block End **/
 
     // undelivered mail
